@@ -6,7 +6,11 @@ LIBMISC	= libapue_db.a
 COMM_OBJ = db.o
 
 ifeq "$(PLATFORM)" "solaris"
-  LDCMD=$(LD) -64 -G -Bdynamic -R/lib/64:/usr/ucblib/sparcv9 -o libapue_db.so.1 -L/lib/64 -L/usr/ucblib/sparcv9 -L$(ROOT)/lib -lapue db.o
+# Original link command for Solaris uses first ld found on PATH
+#  LDCMD=$(LD) -64 -G -Bdynamic -R/lib/64:/usr/ucblib/sparcv9 -o libapue_db.so.1 -L/lib/64 -L/usr/ucblib/sparcv9 -L$(ROOT)/lib -lapue db.o
+# With OpenCSW software installed, must explicitly use full path to Solaris ld,
+# otherwise the csw/gnu/ld linker will be invoked in the above command.
+  LDCMD=/usr/ccs/bin/ld -64 -G -Bdynamic -R/lib/64:/usr/ucblib/sparcv9 -o libapue_db.so.1 -L/lib/64 -L/usr/ucblib/sparcv9 -L$(ROOT)/lib -lapue db.o
   EXTRALD=-m64 -R.
 else
   LDCMD=$(CC) -shared -Wl,-dylib -o libapue_db.so.1 -L$(ROOT)/lib -lapue -lc db.o
